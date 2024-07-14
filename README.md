@@ -187,7 +187,7 @@ Pas besoin d'IDE, Python ou Cobra, il vous faut simplement naviguer et ouvrir le
 En mode vraiment ready to run : Double-cliquez sur `main.sh` pour lancer l'application.
 Sinon vous pouvez ouvrir un terminal ou une invite de commande dans `/Executable/Dev` : 
 ```sh
-./lancer_main.sh
+lancer_main.sh
 ```
 
 #### Bancs de tests
