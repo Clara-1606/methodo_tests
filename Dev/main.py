@@ -4,10 +4,24 @@ import sys
 import pandas as pd
 
 def lire_donnees_entree(data):
+    # Valider les données avant la conversion
+    if 'Date' not in data.columns:
+        raise ValueError("La colonne 'Date' est manquante dans les données.")
+    
+    if data['Date'].isnull().any():
+        raise ValueError("La colonne 'Date' contient des valeurs nulles.")
+
+    # Vérifier si toutes les valeurs de la colonne 'Date' sont des entiers ou peuvent être converties en entiers
+    if not data['Date'].apply(lambda x: isinstance(x, (int, float))).all():
+        raise ValueError("Les valeurs de la colonne 'Date' doivent être des entiers ou des floats.")
+
     #Traiter d'entrée depuis un fichier CSV
     data['Date'] = pd.to_datetime(data['Date'], unit='s')  # Convertir les timestamps en datetime
+    
     data = data.sort_values(by='Date')  # Trier par la colonne 'Date'
-    data.reset_index(drop=True, inplace=True)  # Réinitialiser l'index après le tri
+    
+    data.reset_index(drop=False)
+
     return data
 
 def calculer_serie(data):
@@ -16,75 +30,129 @@ def calculer_serie(data):
 
     for session_id, session_data in data.groupby('SessionID'):
         series = 0
+        nb_serie_actuelle = 0
         dernier_date = None
+        prochaine_date = None
         nb_vies = 2
         nb_assis = 0
         nb_allonge = 0
-        jours_sans_pratique = 0 
         nb_pratiques = 0
+
+        print("session data :")
+        print(session_data)
+        print("*************************")
         
-        print("session data",session_data)
-        print("sessionçid",session_id)
-        
-        for index, row in session_data.iterrows():
+        for i, (index, row) in enumerate(session_data.iterrows()):
             date_actuelle = row['Date'].date()  
+            prochaine_date = session_data.iloc[i+1]['Date'].date() if i < len(session_data)-1 else None
+            print("******* index intiale",index, "********")
+            print("******* index nouveau",i, "********")
+            print()
+            print(row)
+            print()
+            print("vies au départ",nb_vies)
+            print()
+            print("Date avant :",dernier_date)
+            print("date actuelle :",date_actuelle)
+            print("Date suivante :",prochaine_date)
+            print()
             
-            print("index",index)
-            print("row",row)
-            print("date actu",date_actuelle)
-                       
+            if dernier_date is not None and dernier_date != date_actuelle:             
+                nb_assis = 0
+                nb_allonge = 0
+                nb_pratiques = 0
+            
              # Vérifier si c'est une pratique valide (couple assis et allongé le même jour) 
             if (row['Allonge'] and row['Assis']):
                 if (row['Niveau'] == 1):
                     nb_assis +=1
                     nb_allonge +=1
                 elif (row['Niveau'] == 2):
-                    nb_pratiques =+1
-            elif not (row['Allonge'] and row['Assis']):
+                    nb_assis +=2
+                    nb_allonge +=2
+            elif (not row['Allonge']) and row['Assis']:
                 if (row['Niveau'] == 1):
                     nb_assis  +=1
                 elif (row['Niveau'] == 2):
                     nb_assis  +=2
-            elif (row['Allonge'] and not row['Assis']):
+            elif row['Allonge'] and (not row['Assis']):
                 if (row['Niveau'] == 1):
                     nb_allonge  +=1
                 elif (row['Niveau'] == 2):
                     nb_allonge  +=2
-            else:
-                jours_sans_pratique +=1
 
-            print(" assis",nb_assis,"allonge",nb_allonge,"pratiques",nb_pratiques)
+            print()
+            print("assis :",nb_assis)
+            print("allonge :",nb_allonge)
+            print()
             if (nb_assis >= 2 and nb_allonge >= 2):
-                nb_pratiques  =+1
+                nb_pratiques  += 1
 
-            print("pratiques",nb_pratiques)
-                        
-            if dernier_date is not None and (date_actuelle != dernier_date):
-                print("nouveau jour!", date_actuelle)
+            print("pratiques :",nb_pratiques)
+        
+            print()
+                         
+            if dernier_date is not None and dernier_date != date_actuelle :
+                print()
+                print("nouveau jour!")
                 print("avant",dernier_date)
+                print("Maintenant",date_actuelle)
+                print()
                 # Vérifier si les conditions de pratique sont remplies pour ce jour
                 jour_ecart = abs((date_actuelle - dernier_date).days)
+                print("jour d'écart",jour_ecart)
 
-                if nb_vies >= jour_ecart :
-                    nb_vies -= jour_ecart
-                    if (nb_pratiques >=1) :
-                        series += 1 
+                if nb_vies >= jour_ecart - 1 :
+                    if jour_ecart == 1 :
+                        if prochaine_date is None or prochaine_date != date_actuelle :
+                            if nb_pratiques != 1:
+                                nb_vies -= jour_ecart 
+                                print()
+                                print("vie après sans pratique",nb_vies)  
+                            else :
+                                series += 1 
+                                print("nb serie même jour",series)
+                    else :
+                        nb_vies -= jour_ecart - 1
+                        print()
+                        print("vie après jour absence",nb_vies)
+                        if nb_pratiques == 1 :
+                            series += 1 
+                            print("nb serie même jour",series) 
+
                 else : 
                     series = 0
                     nb_vies = 2
                     
-                nb_assis = 0
-                nb_allonge = 0
-                jours_sans_pratique = 0 
-                nb_pratiques = 0
-            else :      
-                if (nb_pratiques >=1) :
-                    series += 1      
-                           
-            dernier_date = date_actuelle 
+            elif (dernier_date is None or dernier_date == date_actuelle) :
+                if prochaine_date is not None and prochaine_date != date_actuelle:
+                    if nb_pratiques != 1 :
+                        nb_vies -= 1
+                        print()
+                        print("vie après sans pratique",nb_vies) 
+                    else :
+                        series += 1 
+                        print("nb serie même jour",series) 
+                else :
+                    if nb_pratiques == 1 :
+                        series += 1 
+                        print("nb serie même jour",series) 
+     
             
-            series_par_session[index] = series
-           
+            if series > 0 and nb_serie_actuelle != series and series % 5 == 0 and nb_vies < 2:
+                nb_vies += 1
+                print("uOUIII", nb_vies)  
+                          
+            print()
+            print("series",series)
+            print("series",nb_serie_actuelle)
+            print()
+                
+            
+            nb_serie_actuelle = series          
+            dernier_date = date_actuelle 
+                
+            series_par_session[index] = series  
     return series_par_session
 
 def generer_sortie(original_data, series_par_session, dossier_sortie):
@@ -92,6 +160,9 @@ def generer_sortie(original_data, series_par_session, dossier_sortie):
     
     # Créer une nouvelle colonne 'Serie' dans les données originales en utilisant les séries calculées
     original_data['Serie'] = original_data.index.map(series_par_session.get)
+    
+    # Convertir les colonnes en leur type original
+    original_data['Serie'] = original_data['Serie'].fillna(0).astype(int)
 
     # Enregistrer les résultats dans un fichier CSV
     output_csv = os.path.join(dossier_sortie, f'result_test.csv')
@@ -133,7 +204,7 @@ def main(fichier_entree, dossier_sortie):
         sys.exit(1)
         
     # Créer une copie des données originales pour conserver l'ordre initial
-    original_data = data.copy()
+    original_data = pd.read_csv(fichier_entree, dtype={'Niveau': str})  
     
     try: 
         #Traiter fichier d'entrée
@@ -144,9 +215,12 @@ def main(fichier_entree, dossier_sortie):
 
         # Générer le fichier de sortie
         generer_sortie(original_data, series_par_session, dossier_sortie)
+    except ValueError as e:
+        print(f"Erreur de conversion : {e}")
     except Exception as e:
-        print(f"Error processing data: {e}")
+        print(f"Erreur lors de l'exécution : {e}")
         sys.exit(1)
+    
 
 
 if __name__ == "__main__":

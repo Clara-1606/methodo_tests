@@ -23,6 +23,13 @@ RESET = "\033[0m"
 def compare_csv(file1, file2):
     df1 = pd.read_csv(file1)
     df2 = pd.read_csv(file2)
+    
+    df1['Niveau'] = df1['Niveau'].apply(lambda x: pd.NA if pd.isna(x) else int(x))
+    df1['Niveau'] = df1['Niveau'].astype(pd.Int64Dtype())  # Utiliser un type entier nullable
+    
+    df2['Niveau'] = df2['Niveau'].apply(lambda x: pd.NA if pd.isna(x) else int(x))
+    df2['Niveau'] = df2['Niveau'].astype(pd.Int64Dtype())
+    
     if df1.equals(df2):
         return True, None
     else:
@@ -62,25 +69,30 @@ def run_test(test_name, timestamp_dir):
     # Vérifier le statut de l'exécution
     if process.returncode == 0:
         result_file = os.path.join(RESULT_DIR, timestamp_dir, test_name, f'result_test.csv')
-        
+        if(not os.path.exists(result_file)):
+            print(f"Erreur: Le fichier '{result_file}' n'existe pas.")
+            print(f" L'exécution du test {test_name} a été spécifiée une erreur :")
+            print(stdout.decode())
+            sys.exit(1)
         print()
         print()
-        print(f"- Exécution du test {test_name} en cours...")
+        print(f" Exécution du test {test_name} en cours...")
         print()
         
         # Comparaison des résultats obtenus aux résultats attendus
-        success, differences = compare_csv(result_file, expected_file)
+        success, differences = compare_csv(expected_file,result_file)
         if success:
             result = f"{GREEN}Test {test_name} réussi !{RESET}"
             print(result)
             print()
-            print("--> Ficher de sortie :",result_file)
+            print(" --> Ficher de sortie :",result_file)
             return True, stdout.decode(), stderr.decode(), None
         else:
             result = f"{RED}Test {test_name} échoué !{RESET}"
             print(result)
             print()
-            print("--> Ficher de sortie :",result_file)
+            print(" --> Ficher de sortie :",result_file)
+            print(differences)
   
             return False , stdout.decode(), stderr.decode(), differences
         
@@ -89,7 +101,7 @@ def run_test(test_name, timestamp_dir):
         print(f"Erreur lors de l'exécution du test {test_name}:")
         print(stderr.decode())
 
-        return False, stdout.decode(), stderr.decode()
+        return False, stdout.decode(), stderr.decode(), None
 
 
 # Fonction principale pour exécuter tous les tests
@@ -100,23 +112,28 @@ def run_all_tests(timestamp_dir, test_name):
 
     test_results = []
     
+    out_dir = os.path.abspath(timestamp_dir)
+    
+    
     if test_name is not None:
+        file_output= os.path.join(out_dir,test_name, f'result_test.csv')
         total_tests += 1
         result, stdout, stderr, differences = run_test(test_name, timestamp_dir)
         if result :
             tests_ok += 1
-        test_results.append((test_name, result, stdout, stderr, differences))
+        test_results.append((test_name, result, stdout, stderr, differences, file_output))
 
     else : 
         # Liste des noms de fichiers CSV sans extension
         tests = [os.path.splitext(f)[0] for f in os.listdir(TEST_INPUT_DIR) if f.endswith('.csv')]
 
         for test in tests:
+            file_output= os.path.join(out_dir,test, f'result_test.csv')
             total_tests += 1
             result, stdout, stderr,differences = run_test(test, timestamp_dir)
             if result :
                 tests_ok += 1
-            test_results.append((test, result, stdout, stderr, differences))
+            test_results.append((test, result, stdout, stderr, differences, file_output))
                 
     # Calcul du pourcentage de réussite
     success_rate = tests_ok / total_tests * 100
@@ -191,26 +208,41 @@ def generate_html_report(timestamp, timestamp_dir, total_tests, tests_ok, succes
         <p>Pourcentage de réussite : <span class="{ 'success' if success_rate == 100 else 'failure' }">{success_rate:.2f}%</span></p>
         <h2>Détails des tests :</h2>
         <ul>
+        <br/>
     """
     # Utilisation d'un compteur pour alterner les classes CSS
     row_number = 0
-    for test_name, result, stdout, stderr, differences in test_results:
+    for test_name, result, stdout, stderr, differences, file_output in test_results:
         row_number += 1
         if not result:
-            html_template += f"""
-                <li>
-                    <h3 class="failure">Test {test_name} : Échoué</h3>
-                    <pre>{stderr}</pre>
-                    <strong> Différences :</strong>
-                    <br/><br/>
-                    {format_dataframe_diff_html(differences)}
-                </li>
-            """
+            if differences is None:
+                html_template += f"""
+                        <li>
+                            <h3 class="failure">Test {test_name} : Échoué</h3>
+                            <pre>{stderr}</pre>
+                            <br/><br/>
+                            <strong> Logs :</strong>
+                            <pre>{stdout}</pre>
+                        </li>
+                    """
+            else:
+                html_template += f"""
+                    <li>
+                        <h3 class="failure">Test {test_name} : Échoué</h3>
+                        <pre>{stderr}</pre>
+                        <strong> Différences :</strong>
+                        <br/><br/>
+                        {format_dataframe_diff_html(differences)}
+                        <br/><br/>
+                        <strong> Logs :</strong>
+                        <pre>{stdout}</pre>
+                    </li>
+                """
         else:
             html_template += f"""
                 <li>
                     <h3 class="success"> Test {test_name} : Réussi !</h3>
-                    <pre>{stdout}</pre>
+                    <pre> Resultats sauvegardés dans {file_output}</pre>
                 </li>
             """
 
@@ -282,5 +314,5 @@ if __name__ == "__main__":
         test_name = sys.argv[1]
         run_all_tests(timestamp_dir,test_name)
             
-    print(f'--> Rapport complet sauvegardé dans {result_dir}')
+    print(f'==> Rapport complet sauvegardé dans {result_dir}')
     print()
