@@ -1,4 +1,4 @@
-# Méthodologies de tests et tests unitaires: Méthode Guillarme --> La gestion des séries 
+# Méthodologies de tests et tests unitaires : Méthode Guillarme --> La gestion des séries 
 
 ## Table des matières
 
@@ -28,7 +28,7 @@ Ou si vous êtes à l'aise en Python, un environnement de dev
 
 ### Structure des répertoires
 
--`Dev/` --> Contient tout le code, dont le script Python principal (`main.py`)
+- `Dev/` --> Contient tout le code, dont le script Python principal (`main.py`)
 	- `Dev/banc_de_tests/` --> Contient les fichiers CSV de test et les fichiers CSV des résultats attendus, ainsi que le script pour lancer les tests (`run_tests.py`)
 - `/Executable` --> Contient tout le nécessaire pour lancer le programme et/ou exécuter les tests sans environnement ou manipulations au préalable grâce à des Script Bash
 		- `Executable/programme/` --> Pour lancer le programme sans installation `/programme`, 
@@ -43,7 +43,7 @@ Ou si vous êtes à l'aise en Python, un environnement de dev
 
 1. Avant tout, cloner le projet ;) 
 ```sh
-	git clone https://github.com/Clara-1606/methodo_tests.git
+git clone https://github.com/Clara-1606/methodo_tests.git
 ```
 
 2. Si vous voulez pas vous embêter et juste tester le programme et/ou lancer le banc de tests automatisés aller [Ici](#lancer-le-projet)
@@ -67,15 +67,15 @@ Ou si vous êtes à l'aise en Python, un environnement de dev
 	Puis si tout va bien, installer les dépendances :
 	- Gérer les DataFrames : 
 		```sh
-			pip install pandas
+		pip install pandas
 		```
 	- Pouvoir créer un exécutable portable :
 		```sh
-			pip install pyinstaller
+		pip install pyinstaller
 		```
 	- Pouvoir extraire les données HTML (sert pour le compte rendu de tests)
 		```sh
-			pip install beautifulsoup4
+		pip install beautifulsoup4
 		```
 7. Lancer les fichiers : 
 	- Pour l'algorithme, se mettre à la racine de `/Dev` : 
@@ -85,21 +85,21 @@ Ou si vous êtes à l'aise en Python, un environnement de dev
 			- `sortie` : Dossier pour récupérer le résultat
 				- S'il n'existe pas --> Il le créer
 				- Si rien est mis --> Créer un défault "Resultats" à la racine `/Dev`
-		```sh
-			python main.py chemin\vers\fichier\fichier.csv <chemin\vers\repertoire\sortie>
-		```
+				```sh
+				python main.py chemin\vers\fichier\fichier.csv <chemin\vers\repertoire\sortie>
+				```
 	- Pour l'algorithme, se mettre dans /Dev/banc_de_tests : 
 		- Optionnel : 
 			- `test-name` : Nom du test à lancer individuellement 
 				- Si rien est mis --> Lance tous les tests existants
-		```sh
-			python run_tests.py <test-name>
-		```
+				```sh
+				python run_tests.py <test-name>
+				```
 		
 8. Pour les petits rigolos qui veulent modifier le code, et relancer les tests, il faudra d'abord recrée l'exécutable `main.exe` : 
-	- se mettre à la racine de `/Dev` :
+	- Naviguer à la racine de `/Dev` :
 		```sh
-			pyinstaller --onefile --distpath "../Executable/programme/dist" main.py
+		pyinstaller --onefile --distpath "../Executable/programme/dist" main.py
 		```
 9. Et voilà c'est bon !! Maintenant que vous êtes des pros, vous pouvez voir directement [Ici](#lancer-le-projet) pour manipuler les scripts sh sans installation / Python
 
@@ -187,19 +187,19 @@ Pas besoin d'IDE, Python ou Cobra, il vous faut simplement naviguer et ouvrir le
 En mode vraiment ready to run : Double-cliquez sur `main.sh` pour lancer l'application.
 Sinon vous pouvez ouvrir un terminal ou une invite de commande dans `/Executable/Dev` : 
 ```sh
-	./lancer_main.sh
+./lancer_main.sh
 ```
 
 #### Bancs de tests
 
 1. Donnez les permissions d'exécution au script `lancer_main.sh` :
 ```sh
-    chmod +x lancer_main.sh
+chmod +x lancer_main.sh
 ```
 
 2. Exécutez le programme :
 ```sh
-    ./lancer_main.sh
+./lancer_main.sh
 ```
 
 Si problème : Si vous exécutez le script sous un compte utilisateur restreint, essayez de l'exécuter avec des privilèges administratifs. 
@@ -215,12 +215,12 @@ Si problème : Si vous exécutez le script sous un compte utilisateur restreint,
 
 2. Donnez les permissions d'exécution au script `lancer_main.sh` :
 ```sh
-    chmod +x lancer_main.sh
+chmod +x lancer_main.sh
 ```
 
 3. Exécutez le programme :
 ```sh
-    ./lancer_main.sh
+./lancer_main.sh
 ```
 
 #### Bancs de tests
