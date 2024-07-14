@@ -1,5 +1,5 @@
 ('C:\\Users\\clara\\Documents\\Ynov\\M2\\Methodo tests\\TP\\TP '
- 'Final\\Code\\Rendu Final\\Dev\\banc_de_tests\\build\\run_tests\\PYZ-00.pyz',
+ 'Final\\Code\\methodo_tests\\Dev\\banc_de_tests\\build\\run_tests\\PYZ-00.pyz',
  [('IPython',
    'C:\\Users\\clara\\AppData\\Local\\Programs\\Python\\Python310\\lib\\site-packages\\IPython\\__init__.py',
    'PYMODULE'),
