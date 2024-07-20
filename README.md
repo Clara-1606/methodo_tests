@@ -31,10 +31,10 @@ Ou si vous êtes à l'aise en Python, un environnement de dev
 - `Dev/` --> Contient tout le code, dont le script Python principal (`main.py`)
 	- `Dev/banc_de_tests/` --> Contient les fichiers CSV de test et les fichiers CSV des résultats attendus, ainsi que le script pour lancer les tests (`run_tests.py`)
 - `/Executable` --> Contient tout le nécessaire pour lancer le programme et/ou exécuter les tests sans environnement ou manipulations au préalable grâce à des Script Bash
-		- `Executable/programme/` --> Pour lancer le programme sans installation `/programme`, 
-			- `Executable\programme\resultats` --> Contiendra les résultats générés après l'exécution du programme par défaut.
-		- `Executable/banc_de_tests/`--> Pour lancer le bancs de tests automatisés `/banc_de_tests`
-			- `Executable\banc_de_tests\results` --> Contiendra les résultats générés après l'exécution des tests.
+	- `Executable/programme/` --> Pour lancer le programme sans installation `/programme`, 
+		- `Executable\programme\resultats` --> Contiendra les résultats générés après l'exécution du programme par défaut.
+	- `Executable/banc_de_tests/`--> Pour lancer le bancs de tests automatisés `/banc_de_tests`
+		- `Executable\banc_de_tests\results` --> Contiendra les résultats générés après l'exécution des tests.
 - `Doc/` --> Toute la documentation des tests (Voir [Documentations](#documentations))	
 - `README.md` : Ce fichier 
 
