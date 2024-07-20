@@ -1,7 +1,15 @@
 import argparse
 import os
 import sys
+
 import pandas as pd
+
+# Fonction de nettoyage pour la colonne 'Assis'
+def nettoyer_booloean(valeur):
+    if valeur == True or valeur == 'True' or valeur == 'true':
+        return True
+    else:
+        return False
 
 def lire_donnees_entree(data):
     # Valider les données avant la conversion
@@ -19,6 +27,10 @@ def lire_donnees_entree(data):
     data['Date'] = pd.to_datetime(data['Date'], unit='s')  # Convertir les timestamps en datetime
     
     data = data.sort_values(by='Date')  # Trier par la colonne 'Date'
+    
+    # Appliquer la fonction de nettoyage à la colonne 'Assis'
+    data['Assis'] = data['Assis'].apply(nettoyer_booloean)
+    data['Allonge'] = data['Allonge'].apply(nettoyer_booloean)
     
     data.reset_index(drop=False)
 
@@ -57,25 +69,25 @@ def calculer_serie(data):
             print("Date suivante :",prochaine_date)
             print()
             
-            if dernier_date is not None and dernier_date != date_actuelle:             
+            if dernier_date is not None and dernier_date != date_actuelle:          
                 nb_assis = 0
                 nb_allonge = 0
                 nb_pratiques = 0
             
              # Vérifier si c'est une pratique valide (couple assis et allongé le même jour) 
-            if (row['Allonge'] and row['Assis']):
+            if (row['Allonge'] and row['Assis']) :
                 if (row['Niveau'] == 1):
                     nb_assis +=1
                     nb_allonge +=1
                 elif (row['Niveau'] == 2):
                     nb_assis +=2
                     nb_allonge +=2
-            elif (not row['Allonge']) and row['Assis']:
+            elif ((not row['Allonge']) and row['Assis']):
                 if (row['Niveau'] == 1):
                     nb_assis  +=1
                 elif (row['Niveau'] == 2):
                     nb_assis  +=2
-            elif row['Allonge'] and (not row['Assis']):
+            elif (row['Allonge'] and (not row['Assis'])):
                 if (row['Niveau'] == 1):
                     nb_allonge  +=1
                 elif (row['Niveau'] == 2):
@@ -119,6 +131,11 @@ def calculer_serie(data):
                         if nb_pratiques == 1 :
                             series += 1 
                             print("nb serie même jour",series) 
+                        elif prochaine_date is None or prochaine_date != date_actuelle:
+                            if nb_pratiques != 1 :
+                                nb_vies -= 1
+                                print()
+                                print("vie après sans pratique",nb_vies)
 
                 else : 
                     series = 0
