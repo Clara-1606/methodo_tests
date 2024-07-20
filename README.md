@@ -31,9 +31,9 @@ Ou si vous êtes à l'aise en Python, un environnement de dev
 - `Dev/` --> Contient tout le code, dont le script Python principal (`main.py`)
 	- `Dev/banc_de_tests/` --> Contient les fichiers CSV de test et les fichiers CSV des résultats attendus, ainsi que le script pour lancer les tests (`run_tests.py`)
 - `/Executable` --> Contient tout le nécessaire pour lancer le programme et/ou exécuter les tests sans environnement ou manipulations au préalable grâce à des Script Bash
-	- `Executable/programme/` --> Pour lancer le programme sans installation `/programme`, 
+	- `Executable/programme/` --> Pour lancer le programme sans installation, 
 		- `Executable\programme\resultats` --> Contiendra les résultats générés après l'exécution du programme par défaut.
-	- `Executable/banc_de_tests/`--> Pour lancer le bancs de tests automatisés `/banc_de_tests`
+	- `Executable/banc_de_tests/`--> Pour lancer le banc de tests automatisés
 		- `Executable\banc_de_tests\results` --> Contiendra les résultats générés après l'exécution des tests.
 - `Doc/` --> Toute la documentation des tests (Voir [Documentations](#documentations))	
 - `README.md` : Ce fichier 
@@ -191,15 +191,10 @@ lancer_main.sh
 ```
 
 #### Bancs de tests
-
-1. Donnez les permissions d'exécution au script `lancer_main.sh` :
+En mode vraiment ready to run : Double-cliquez sur `lancer_tests.sh` pour lancer l'application.
+Sinon vous pouvez ouvrir un terminal ou une invite de commande dans `/Executable/banc_de_tests` : 
 ```sh
-chmod +x lancer_main.sh
-```
-
-2. Exécutez le programme :
-```sh
-./lancer_main.sh
+./lancer_tests.sh
 ```
 
 Si problème : Si vous exécutez le script sous un compte utilisateur restreint, essayez de l'exécuter avec des privilèges administratifs. 
