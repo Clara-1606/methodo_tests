@@ -252,7 +252,7 @@ Si problème : Si vous exécutez le script sous un compte utilisateur restreint,
 
 Toute la documentation est disponible dans le git : `/Doc`
 - La stratégie de tests / Plan de Tests 
-- Les fiches de tests / Plan de Mise en Œuvre des Tests
+- Les fiches de tests / Procédure de Mise en Œuvre des Tests
 - CRT
 - Quelques exemples de comptes rendus de tests générés après les avoir lancer automatiquement
 
